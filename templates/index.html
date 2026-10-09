@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>高中英语试卷批改网</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">📝 高中英语试卷批改网</div>
+    <div class="tagline">上传试卷 PDF → 配置答案 → 在线作答 → 批改报告（分数 + 解析）</div>
+  </header>
+
+  <nav class="steps" id="steps">
+    <div class="step" data-step="1"><span class="dot">1</span>上传试卷</div>
+    <div class="step" data-step="2"><span class="dot">2</span>配置答案</div>
+    <div class="step" data-step="3"><span class="dot">3</span>学生作答</div>
+    <div class="step" data-step="4"><span class="dot">4</span>批改报告</div>
+  </nav>
+
+  <main class="container">
+
+    <!-- ================= 步骤 1：上传 ================= -->
+    <section class="panel" id="panel-upload">
+      <h2>上传高中英语试卷</h2>
+      <p class="muted">支持文字版 PDF（推荐）、TXT、图片。扫描版 PDF 需在 .env 配置 AI 视觉模型。</p>
+      <div class="dropzone" id="dropzone">
+        <div class="dz-icon">📄</div>
+        <div>点击选择文件，或将文件拖到此处</div>
+        <div class="muted small">PDF / TXT / PNG / JPG · 最大 100MB</div>
+        <input type="file" id="file-input" accept=".pdf,.txt,.png,.jpg,.jpeg,.gif" hidden>
+      </div>
+      <div class="uploading" id="upload-status" hidden>
+        <div class="spinner"></div><span id="upload-status-text">正在解析试卷…</span>
+      </div>
+      <div class="hint" id="upload-hint">
+        <b>没有现成试卷？</b> 运行 <code>python make_demo_paper.py</code> 生成演示试卷
+        <code>demo_paper.pdf</code>，用它完整体验批改流程。
+      </div>
+    </section>
+
+    <!-- ================= 步骤 2：配置 ================= -->
+    <section class="panel" id="panel-config" hidden>
+      <div class="panel-head">
+        <h2>试卷解析结果 — 请确认并配置标准答案</h2>
+        <div class="actions">
+          <button class="btn ghost" id="btn-ai-explain">✨ AI 生成解析</button>
+          <button class="btn primary" id="btn-save-config">保存并进入作答 →</button>
+        </div>
+      </div>
+      <p class="muted" id="config-warning" hidden></p>
+      <div id="config-sections"></div>
+    </section>
+
+    <!-- ================= 步骤 3：作答 ================= -->
+    <section class="panel" id="panel-answer" hidden>
+      <div class="panel-head">
+        <h2>学生作答</h2>
+        <div class="actions">
+          <button class="btn ghost" id="btn-back-config">← 返回配置</button>
+          <button class="btn primary" id="btn-submit">提交并批改</button>
+        </div>
+      </div>
+      <label class="field">
+        <span>学生姓名</span>
+        <input type="text" id="student-name" placeholder="姓名 / 学号（可留空）">
+      </label>
+      <details class="fold">
+        <summary>或：上传学生已作答的 PDF / 图片答卷（自动提取）</summary>
+        <div class="fold-body">
+          <input type="file" id="sheet-input" accept=".pdf,.txt,.png,.jpg,.jpeg,.gif">
+          <button class="btn" id="btn-upload-sheet">提取并批改</button>
+          <div class="muted small">提取依赖答卷文字层；扫描手写卷建议配置 AI 视觉模型。提取结果请在报告中核对。</div>
+        </div>
+      </details>
+      <div id="answer-sections"></div>
+    </section>
+
+    <!-- ================= 步骤 4：结果 ================= -->
+    <section class="panel" id="panel-result" hidden>
+      <div class="panel-head">
+        <h2>批改报告</h2>
+        <div class="actions">
+          <button class="btn ghost" id="btn-reanswer">重新作答</button>
+          <button class="btn ghost" id="btn-print" onclick="window.print()">🖨 打印</button>
+          <a class="btn primary" id="btn-pdf" href="#" target="_blank">⬇ 下载批改版 PDF</a>
+        </div>
+      </div>
+      <div id="result-body"></div>
+    </section>
+
+  </main>
+
+  <div id="toast" hidden></div>
+  <footer class="foot">
+    基于开源项目 <a href="https://github.com/bhanuxbisht/ai-assignment-checker" target="_blank" rel="noopener">ai-assignment-checker</a> (MIT) 优化构建 ·
+    可选 AI：OpenAI 兼容 API（作文精批 / 解析生成 / 扫描卷 OCR），无 API 时全离线可用
+  </footer>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
