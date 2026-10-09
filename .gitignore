@@ -1,0 +1,14 @@
+# 运行时数据
+uploads/
+sessions/
+__pycache__/
+*.pyc
+
+# 已解压的依赖（仓库只保留 wheel，首次启动自动解压）
+vendor/lib/
+
+# 本地配置
+.env
+
+# 开发产物
+graded_test.pdf
